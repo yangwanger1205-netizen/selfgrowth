@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>校园失物招领</title>
+<style>
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  color: #193138;
+  background: #f0f6f4;
+  font: 1rem/1.6 system-ui, "Microsoft YaHei", sans-serif;
+}
+.wrap { width: min(66rem, calc(100% - 2rem)); margin-inline: auto; }
+.banner { padding: 2rem 0; color: white; background: #124f47; }
+.banner a { color: white; }
+.banner h1, .banner p { margin: .2rem 0; }
+.eyebrow { color: #c5eee4; font-size: .9rem; }
+main.wrap { margin-block: 1.5rem; }
+.grid { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); gap: 1rem; align-items: start; }
+.panel { padding: 1.3rem; background: white; border: 1px solid #d6e4e0; border-radius: .8rem; }
+h2 { margin: 0 0 .8rem; overflow-wrap: anywhere; }
+label { display: block; font-weight: 600; }
+form label { margin-bottom: .8rem; }
+input, button { font: inherit; }
+input { width: 100%; margin-top: .25rem; padding: .55rem .7rem; border: 1px solid #78958e; border-radius: .35rem; }
+button { padding: .5rem 1rem; border: 0; border-radius: .35rem; color: white; background: #166257; cursor: pointer; }
+button:hover { background: #124f47; }
+button:disabled { opacity: .6; cursor: default; }
+:focus-visible { outline: 3px solid #187d93; outline-offset: 3px; }
+.muted { color: #49625f; font-size: .9rem; }
+#feedback:empty { display: none; }
+#items { margin: 0; padding: 0; list-style: none; }
+#items li { padding: .85rem 0; border-top: 1px solid #d6e4e0; overflow-wrap: anywhere; }
+#items a { color: #0e5f55; font-weight: 700; }
+#items p { margin: .3rem 0 0; }
+.item-image { max-width: 100%; max-height: 16rem; border-radius: .35rem; object-fit: contain; }
+#items .item-image { width: 7rem; height: 5rem; margin-top: .45rem; object-fit: cover; }
+dt { font-weight: 700; }
+dd { margin: 0 0 .7rem; overflow-wrap: anywhere; }
+@media (max-width: 42rem) { .grid { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div id="home-view">
+  <header class="banner">
+    <div class="wrap">
+      <a href="../projects.html#lost-found">← 返回成长主页的项目介绍</a>
+      <p class="eyebrow">校园生活 · 失物登记</p>
+      <h1>校园失物招领</h1>
+      <p>登记丢失的物品，按名称或地点查找失物。</p>
+    </div>
+  </header>
+  <main class="wrap grid">
+    <section class="panel">
+      <h2>发布失物</h2>
+      <form id="publish" novalidate>
+        <button type="button" id="fill-example">填入测试资料</button>
+        <label>物品名称（必填）<input name="title" required maxlength="80" placeholder="例如：蓝色水杯"></label>
+        <label>丢失地点（必填）<input name="location" required maxlength="100" placeholder="例如：图书馆二楼"></label>
+        <label>丢失时间（选填）<input type="datetime-local" name="time"></label>
+        <label>联系方式（必填）<input name="contact" type="tel" required maxlength="60" placeholder="请输入联系电话"></label>
+        <label>物品图片（选填，最多 500 KB）<input name="image" type="file" accept="image/jpeg,image/png,image/webp,image/gif"></label>
+        <button type="submit">发布</button>
+        <p id="feedback" role="status"></p>
+      </form>
+      <p class="muted">记录仅保存在当前浏览器中。演示时请使用测试号码。</p>
+    </section>
+    <section class="panel">
+      <h2>失物列表</h2>
+      <label for="search">搜索失物</label>
+      <input id="search" type="search" placeholder="输入物品名称或丢失地点">
+      <p id="results" class="muted" role="status"></p>
+      <ul id="items"></ul>
+    </section>
+  </main>
+</div>
+<div id="detail-view" hidden>
+  <header class="banner">
+    <div class="wrap">
+      <a href="?">← 返回首页</a>
+      <h1>失物详情</h1>
+    </div>
+  </header>
+  <main class="wrap">
+    <section class="panel" id="detail">
+      <p id="detail-message" role="status"></p>
+      <article id="item-detail" hidden>
+        <h2 id="item-title"></h2>
+        <img id="item-image" class="item-image" alt="失物照片" hidden>
+        <dl>
+          <dt>丢失地点</dt><dd id="item-location"></dd>
+          <dt>丢失时间</dt><dd id="item-time"></dd>
+          <dt>状态</dt><dd id="item-status"></dd>
+        </dl>
+        <button type="button" id="show-contact" aria-controls="full-contact" aria-expanded="false">查看联系方式</button>
+        <p id="full-contact" role="status" hidden></p>
+      </article>
+    </section>
+  </main>
+</div>
+<script>
+"use strict";
+
+const storageKey = "campus-lost-found:v1";
+const byId = (id) => document.getElementById(id);
+
+function loadItems() {
+  const items = JSON.parse(localStorage.getItem(storageKey) ?? "[]");
+  if (!Array.isArray(items)) throw new Error("Invalid item storage");
+  return items;
+}
+
+function displayTime(time) {
+  return time ? time.replace("T", " ") : "未填写";
+}
+
+function maskContact(contact) {
+  const digits = contact.replace(/[\s-]/g, "");
+  if (/^1\d{10}$/.test(digits)) {
+    return digits.slice(0, 3) + "****" + digits.slice(-4);
+  }
+  return "****";
+}
+
+function showImage(image, source) {
+  if (typeof source !== "string" || !/^data:image\/(jpeg|png|webp|gif);base64,[A-Za-z0-9+/]+=*$/.test(source)) return;
+  image.src = source;
+  image.hidden = false;
+}
+
+function readImage(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.onabort = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+function initHome(form) {
+  // 示例按钮只填表单，点击“发布”后才会保存到当前浏览器。
+  byId("fill-example").addEventListener("click", () => {
+    form.elements.namedItem("title").value = "蓝色水杯（测试）";
+    form.elements.namedItem("location").value = "图书馆二楼（测试）";
+    form.elements.namedItem("time").value = "";
+    form.elements.namedItem("contact").value = "13800000000";
+  });
+  const search = byId("search");
+  const list = byId("items");
+  const results = byId("results");
+  const feedback = byId("feedback");
+  let items;
+
+  try {
+    items = loadItems();
+  } catch {
+    results.textContent = "无法读取本地记录，请检查浏览器存储设置。";
+    search.disabled = true;
+    form.querySelector('button[type="submit"]').disabled = true;
+    return;
+  }
+
+  function render() {
+    const keyword = search.value.trim().toLowerCase();
+    const matches = items
+      .filter((item) => [item.title, item.location].some((value) => value.toLowerCase().includes(keyword)))
+      .sort((a, b) => b.createdAt - a.createdAt);
+
+    results.textContent = matches.length
+      ? "共 " + matches.length + " 条失物信息"
+      : "没有找到相关失物信息";
+    list.replaceChildren(...matches.map((item) => {
+      const row = document.createElement("li");
+      const title = document.createElement("a");
+      title.href = "?id=" + encodeURIComponent(item.id);
+      title.textContent = item.title;
+      const metadata = document.createElement("p");
+      metadata.textContent = "丢失地点：" + item.location + "　丢失时间：" + displayTime(item.time);
+      const contact = document.createElement("p");
+      contact.textContent = "联系方式：" + maskContact(item.contact);
+      row.append(title, metadata, contact);
+      if (item.image) {
+        const image = document.createElement("img");
+        image.className = "item-image";
+        image.alt = "失物缩略图";
+        image.loading = "lazy";
+        image.hidden = true;
+        showImage(image, item.image);
+        row.append(image);
+      }
+      return row;
+    }));
+  }
+
+  search.addEventListener("input", render);
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const submit = form.querySelector('button[type="submit"]');
+    if (submit.disabled) return;
+    feedback.textContent = "";
+    const fields = new FormData(form);
+    const title = fields.get("title").trim();
+    const location = fields.get("location").trim();
+    const time = fields.get("time");
+    const contact = fields.get("contact").trim();
+
+    if (!title || !location) {
+      alert("请填写物品名称和丢失地点");
+      form.elements.namedItem(title ? "location" : "title").focus();
+      return;
+    }
+    if (!contact) {
+      alert("请填写联系方式");
+      form.elements.namedItem("contact").focus();
+      return;
+    }
+    const createdAt = Date.now();
+    const id = createdAt + "-" + Math.random().toString(36).slice(2);
+    const item = { id, title, location, time, contact, status: "待认领", createdAt };
+    const file = fields.get("image");
+    if (file?.size > 500 * 1024) {
+      feedback.textContent = "图片不能超过 500 KB。";
+      return;
+    }
+    if (file?.size && !["image/jpeg", "image/png", "image/webp", "image/gif"].includes(file.type)) {
+      feedback.textContent = "请选择 JPG、PNG、WebP 或 GIF 图片。";
+      return;
+    }
+
+    submit.disabled = true;
+    try {
+      if (file?.size) item.image = await readImage(file);
+    } catch {
+      feedback.textContent = "图片读取失败，请重新选择。";
+      submit.disabled = false;
+      return;
+    }
+    try {
+      const next = [item, ...loadItems()];
+      localStorage.setItem(storageKey, JSON.stringify(next));
+      items = next;
+    } catch {
+      feedback.textContent = "保存失败，请检查浏览器存储设置或可用空间后重试。";
+      return;
+    } finally {
+      submit.disabled = false;
+    }
+
+    form.reset();
+    search.value = "";
+    feedback.textContent = "发布成功";
+    render();
+  });
+  render();
+}
+
+function initDetail() {
+  const message = byId("detail-message");
+  const id = new URLSearchParams(window.location.search).get("id");
+  let item;
+  try {
+    item = loadItems().find((record) => record.id === id);
+  } catch {
+    message.textContent = "无法读取本地记录，请检查浏览器存储设置。";
+    return;
+  }
+  if (!item) {
+    message.textContent = "未找到此失物记录。";
+    return;
+  }
+
+  message.hidden = true;
+  byId("item-title").textContent = item.title;
+  showImage(byId("item-image"), item.image);
+  byId("item-location").textContent = item.location;
+  byId("item-time").textContent = displayTime(item.time);
+  byId("item-status").textContent = item.status;
+  byId("item-detail").hidden = false;
+
+  const button = byId("show-contact");
+  const contact = byId("full-contact");
+  button.addEventListener("click", () => {
+    const show = contact.hidden;
+    contact.textContent = show ? item.contact : "";
+    contact.hidden = !show;
+    button.textContent = show ? "隐藏联系方式" : "查看联系方式";
+    button.setAttribute("aria-expanded", String(show));
+  });
+}
+
+
+const showDetail = new URLSearchParams(window.location.search).has("id");
+byId("home-view").hidden = showDetail;
+byId("detail-view").hidden = !showDetail;
+if (showDetail) initDetail();
+else initHome(byId("publish"));
+</script>
+</body>
+</html>

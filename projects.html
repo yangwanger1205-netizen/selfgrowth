@@ -76,6 +76,7 @@
       <article class="card project">
         <p class="eyebrow">练习项目 <span aria-hidden="true">/</span> WEB</p>
         <h3>校园失物招领网页</h3>
+        <p><a class="text-link" href="lost-found/index.html">打开完整运行演示</a></p>
         <ul class="tags" aria-label="使用技术">
           <li>HTML</li><li>CSS</li><li>JavaScript</li><li>localStorage</li>
         </ul>
@@ -85,9 +86,13 @@
           <dt>最大困难</dt><dd>同一条记录需要在列表和详情中以不同方式展示联系方式。列表渲染时只写入脱敏号码，详情等访客点击按钮后才写入完整号码。</dd>
           <dt>使用范围</dt><dd>记录只保存在当前浏览器的 localStorage 中，适合本机演示。演示使用测试号码。</dd>
         </dl>
+        <figure class="project-shot">
+          <a href="lost-found-demo.png"><img src="lost-found-demo.png" alt="失物招领项目实测截图，展示测试资料发布成功、失物列表和脱敏联系方式"></a>
+          <figcaption>浏览器实测，使用测试物品与测试号码。点击图片查看原图。</figcaption>
+        </figure>
         <details class="evidence">
           <summary>展开列表脱敏代码</summary>
-          <p>摘自失物招领练习的 <code>app.js</code>。先去掉空格和连字符，再保留符合格式的手机号前 3 位与后 4 位。</p>
+          <p>摘自 <code>lost-found/index.html</code> 中的脚本。先去掉空格和连字符，再保留符合格式的手机号前 3 位与后 4 位。</p>
           <pre><code>function maskContact(contact) {
   const digits = contact.replace(/[\s-]/g, "");
   if (/^1\d{10}$/.test(digits)) {

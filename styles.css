@@ -79,6 +79,9 @@ h3 { font-size: 1.22rem; }
 .card p:not(.eyebrow), dd { color: var(--muted); }
 .card .text-link { display: inline-block; margin-top: .75rem; }
 .project + .project { margin-top: 1rem; }
+.project-shot { margin: 1rem 0; }
+.project-shot img { display: block; width: 100%; border: 1px solid var(--edge); border-radius: .4rem; }
+.project-shot figcaption { margin-top: .4rem; color: var(--muted); font-size: .9rem; }
 
 .contact { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; padding: 1.2rem 1.45rem; border-radius: .65rem; background: #e6ece0; }
 .contact .eyebrow { margin-bottom: .4rem; }
@@ -114,6 +117,7 @@ pre { max-width: 100%; margin-top: .65rem; overflow: auto; padding: .9rem; borde
 code { font-family: ui-monospace, Consolas, monospace; }
 
 @media (max-width: 47rem) {
+  /* 窄屏把导航和主要内容上下排列。 */
   .wrap { width: calc(100% - 2rem); }
   .header-inner { align-items: flex-start; flex-direction: column; gap: .45rem; padding-block: .75rem; }
   .hero { grid-template-columns: 1fr; }
@@ -122,6 +126,7 @@ code { font-family: ui-monospace, Consolas, monospace; }
 }
 
 @media (max-width: 36rem) {
+  /* 手机宽度下，更新卡片、记录和截图都改为单列。 */
   .highlights, .entry, .screenshots { grid-template-columns: 1fr; }
   .entry-meta { flex-direction: row; align-items: baseline; }
   .filter p { width: 100%; margin-inline-start: 0; }

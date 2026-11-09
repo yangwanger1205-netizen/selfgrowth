@@ -29,7 +29,8 @@
     </header>
 
     <section aria-label="学习条目">
-      <form class="filter" id="topic-filter" hidden>
+      <!-- 筛选表单默认可见，learning.js 处理主题切换与提交。 -->
+      <form class="filter" id="topic-filter">
         <label for="topic">按主题筛选</label>
         <select id="topic" name="topic">
           <option value="all">全部记录</option>
@@ -41,6 +42,7 @@
         <p id="record-count" role="status"></p>
       </form>
 
+      <!-- 新记录添加在这里的最前面，填写真实日期并沿用 data-topic 主题代码。 -->
       <div class="entries">
         <article class="card entry" id="multi-page" data-topic="pages">
           <div class="entry-meta">
