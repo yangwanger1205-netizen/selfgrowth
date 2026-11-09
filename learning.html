@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>学习记录 · 我的成长主页</title>
+  <link rel="stylesheet" href="styles.css">
+  <script defer src="learning.js"></script>
+</head>
+<body>
+  <a class="skip" href="#main">跳到正文</a>
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="index.html"><span class="brand-mark" aria-hidden="true">W</span> 王样的学习笔记</a>
+      <nav aria-label="主导航">
+        <a href="index.html">首页</a>
+        <a href="learning.html" aria-current="page">学习记录</a>
+        <a href="projects.html">技能与项目</a>
+        <a href="index.html#contact">联系</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main" class="wrap">
+    <header class="page-intro">
+      <p class="eyebrow">LEARNING LOG</p>
+      <h1>学习记录</h1>
+      <p class="lead">这些记录整理自网页练习和评审反馈，日期为整理日期。</p>
+    </header>
+
+    <section aria-label="学习条目">
+      <div class="filter" id="topic-filter" hidden>
+        <label for="topic">按主题筛选</label>
+        <select id="topic">
+          <option value="all">全部记录</option>
+          <option value="pages">网页结构</option>
+          <option value="data">前端交互</option>
+          <option value="review">提交验收</option>
+        </select>
+        <p id="record-count" role="status"></p>
+      </div>
+
+      <div class="entries">
+        <article class="card entry" id="multi-page" data-topic="pages">
+          <div class="entry-meta">
+            <time datetime="2026-11-09">2026-11-09</time>
+            <span class="tag">网页结构</span>
+          </div>
+          <div>
+            <h2>用独立页面组织成长主页</h2>
+            <dl>
+              <dt>学了什么</dt><dd>用独立的 HTML 文件和相对链接实现页面之间的导航。</dd>
+              <dt>遇到的问题</dt><dd>评审要求至少三个可互跳的页面。先前的单文件练习通过 URL 参数切换视图，提交后只算一个页面文件。</dd>
+              <dt>怎么处理</dt><dd>把成长主页拆成首页、学习记录和技能与项目三个文件。每页使用相同的导航链接，并标记当前所在页面。</dd>
+            </dl>
+          </div>
+        </article>
+
+        <article class="card entry" data-topic="data">
+          <div class="entry-meta">
+            <time datetime="2026-11-09">2026-11-09</time>
+            <span class="tag">前端交互</span>
+          </div>
+          <div>
+            <h2>让失物记录刷新后还能找到</h2>
+            <dl>
+              <dt>学了什么</dt><dd>用 localStorage 保存记录，用物品名称和丢失地点筛选列表。</dd>
+              <dt>遇到的问题</dt><dd>发布后要保留数据。列表要隐藏手机号的中间四位，详情又要能按需显示完整号码。</dd>
+              <dt>怎么处理</dt><dd>把记录转为 JSON 存入浏览器，加载时重新读取。列表调用脱敏函数，详情由按钮控制完整号码的显示。评审验证了刷新、搜索和脱敏行为。</dd>
+            </dl>
+          </div>
+        </article>
+
+        <article class="card entry" data-topic="review">
+          <div class="entry-meta">
+            <time datetime="2026-11-09">2026-11-09</time>
+            <span class="tag">提交验收</span>
+          </div>
+          <div>
+            <h2>按评审要求检查交付文件</h2>
+            <dl>
+              <dt>学了什么</dt><dd>提交前核对入口、样式、脚本和项目说明，逐项对照评审要求。</dd>
+              <dt>遇到的问题</dt><dd>失物招领练习第一次只提交了 CSS。评审能看到样式，却无法验证表单、存储和搜索。</dd>
+              <dt>怎么处理</dt><dd>失物招领练习改交包含 HTML、CSS 和 JavaScript 的完整文件。成长主页则使用多文件仓库，并随源码提交 README、首页截图和更新计划。</dd>
+            </dl>
+          </div>
+        </article>
+      </div>
+    </section>
+  </main>
+  <footer class="wrap site-footer"><p>王样 · 我的成长主页</p></footer>
+</body>
+</html>
