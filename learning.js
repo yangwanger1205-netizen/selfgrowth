@@ -16,5 +16,9 @@ function updateEntries() {
 }
 
 topic.addEventListener("change", updateEntries);
+filter.addEventListener("submit", (event) => {
+  event.preventDefault();
+  updateEntries();
+});
 filter.hidden = false;
 updateEntries();

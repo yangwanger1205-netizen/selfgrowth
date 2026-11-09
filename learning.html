@@ -29,16 +29,17 @@
     </header>
 
     <section aria-label="学习条目">
-      <div class="filter" id="topic-filter" hidden>
+      <form class="filter" id="topic-filter" hidden>
         <label for="topic">按主题筛选</label>
-        <select id="topic">
+        <select id="topic" name="topic">
           <option value="all">全部记录</option>
           <option value="pages">网页结构</option>
           <option value="data">前端交互</option>
           <option value="review">提交验收</option>
         </select>
+        <button class="button" type="submit">应用筛选</button>
         <p id="record-count" role="status"></p>
-      </div>
+      </form>
 
       <div class="entries">
         <article class="card entry" id="multi-page" data-topic="pages">

@@ -78,6 +78,7 @@ h3 { font-size: 1.22rem; }
 .card h2 + p, .card h3 + p { margin-top: .55rem; }
 .card p:not(.eyebrow), dd { color: var(--muted); }
 .card .text-link { display: inline-block; margin-top: .75rem; }
+.project + .project { margin-top: 1rem; }
 
 .contact { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; padding: 1.2rem 1.45rem; border-radius: .65rem; background: #e6ece0; }
 .contact .eyebrow { margin-bottom: .4rem; }
@@ -90,6 +91,7 @@ h3 { font-size: 1.22rem; }
 .filter { display: flex; align-items: center; flex-wrap: wrap; gap: .65rem; margin-bottom: 1rem; }
 .filter label { font-weight: 700; }
 .filter select { padding: .4rem .65rem; border: 1px solid #889990; border-radius: .35rem; background: var(--card); color: var(--ink); font: inherit; }
+.filter button { border: 0; font-family: inherit; cursor: pointer; }
 .filter p { color: var(--muted); margin-inline-start: auto; }
 .entries { display: grid; gap: 1rem; }
 .entry { display: grid; grid-template-columns: 8rem minmax(0, 1fr); gap: .75rem 1.4rem; }
